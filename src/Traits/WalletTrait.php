@@ -21,11 +21,11 @@ trait WalletTrait
      */
     abstract protected function getPassType();
 
-    public static function registerApn($deviceLibraryIdentifier, $serialNumber)
+    public static function registerApn($deviceLibraryIdentifier, $serialNumber, $apnToken)
     {
         Device::firstOrCreate([
             'device_library_identifier'                 => $deviceLibraryIdentifier,
-            config('wallet.apn_token_field', 'token')   => request('data')['token']
+            config('wallet.apn_token_field', 'token')   => $apnToken
         ])->register($serialNumber);
     }
 
