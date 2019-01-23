@@ -19,7 +19,7 @@ class CreateRegistrationsTable extends Migration
             $table->integer('pass_id')->unsigned();
             $table->timestamps();
 
-            $table->foreign('device_id')->references('devices')->onDelete('cascade');
+            $table->foreign('device_id')->references(config('wallet.devices_table', 'devices'))->onDelete('cascade');
             $table->foreign('pass_id')->references('passes')->onDelete('cascade');
         });
     }

@@ -1,15 +1,15 @@
 <?php
 
-namespace RevoSystems\Wallet\Controllers\Api;
+namespace RevoSystems\iOSWallet\Controllers\Api;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Response;
+use RevoSystems\iOSWallet\Models\Pass;
 
 class WalletController extends Controller
 {
     public function __middleware()
     {
-        \Log::info(request()->toArray());
         if (! $this->verifyAuthToken(request('data')['token'])) {
             return response()->json(['status' => Response::HTTP_UNAUTHORIZED, 'message' => 'Wrong token']);
         }
@@ -28,19 +28,11 @@ class WalletController extends Controller
 
     public function register()
     {
-        $device = Device::firstOrCreate([
-            "identifier" => request('deviceLibraryIdentifier'),
-            "token" => request('data')['token']
-        ]);
-        Pass::firstOrCreate([
-            "passType_id"   => PassType::where('passType', request('passType'))->first()->id,
-            "device_id"     => $device->id,
-            "serialNumber"  => request('serialNumber'),
-        ]);
+        Pass::registerApn(request('deviceLibraryIdentifier'), request('serialNumber'));
     }
 
     public function unRegister()
     {
-        Device::findOrFail(request('deviceLibraryIdentifier'))->unRegister(request('passType'), request('serialNumber'));
+        Pass::unRegisterApn(request('deviceLibraryIdentifier'), request('serialNumber')); /*, only have one passType request('passType')*/
     }
 }

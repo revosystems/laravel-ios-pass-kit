@@ -2,7 +2,6 @@
     "name": "revosystems/laravel-ios-wallet",
     "description": "iOS Wallet Pass manager",
     "type": "library",
-    "license": "MIT",
     "authors": [
         {
             "name": "Pau Benet",
@@ -12,26 +11,10 @@
     "require": {
         "laravel/framework": ">=5.5"
     },
-    "require-dev": {
-        "vlucas/phpdotenv": "^2.4",
-        "phpunit/phpunit": "~5.7"
-    },
     "autoload": {
         "files" : [],
         "psr-4": {
             "RevoSystems\\iOSWallet\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "RevoSystems\\iOSWallet\\WalletServiceProvider"
-            ]
         }
     },
     "minimum-stability": "stable"

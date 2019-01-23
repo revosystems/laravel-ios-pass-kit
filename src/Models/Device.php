@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Device extends Model
 {
-    protected $guarded = [];
+    protected $table    = config('wallet.devices_table', 'devices');
+    protected $guarded  = [];
 
     use SoftDeletes;
 
@@ -15,13 +16,20 @@ class Device extends Model
     {
         return $this->hasMany(Pass::class);
     }
-    
-    public function unRegister($passType, $serialNumber)
+
+    public function register($serialNumber)
     {
-        $this->passes()->where('passType', $passType)
-            ->where('serialNumber', $serialNumber)
+        Registration::firstOrCreate([
+            "device_id" => $this->id,
+            "pass_id"   => Pass::where(config('wallet.serial_number_field', 'serial_number'), $serialNumber)->firstOrFail(),
+        ]);
+
+    }
+    public function unRegister($serialNumber)
+    {
+        $this->passes() /* Only have one passType ->where('passType', $passType) */
+            ->where(config('wallet.serial_number_field', 'serial_number'), $serialNumber)
             ->delete();
-//        if (! $device->passes()->count()) {
         if ($this->hasNot('passes')) {
             $this->delete();
         }
