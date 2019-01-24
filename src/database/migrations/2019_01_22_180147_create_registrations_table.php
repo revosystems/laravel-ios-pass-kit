@@ -16,11 +16,11 @@ class CreateRegistrationsTable extends Migration
         Schema::create('registrations', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('device_id')->unsigned();
-            $table->integer('pass_id')->unsigned();
+            $table->integer('walletable_id')->unsigned();
             $table->timestamps();
+            $table->softDeletes();
 
-            $table->foreign('device_id')->references(config('wallet.devices_table', 'devices'))->onDelete('cascade');
-            $table->foreign('pass_id')->references('passes')->onDelete('cascade');
+            $table->foreign('device_id')->references('id')->on(config('wallet.devices_table', 'devices'))->onDelete('cascade');
         });
     }
 
