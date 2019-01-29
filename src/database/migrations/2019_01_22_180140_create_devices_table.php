@@ -13,10 +13,10 @@ class CreateDevicesTable extends Migration
      */
     public function up()
     {
-        Schema::create(config('wallet.devices_table', 'devices'), function (Blueprint $table) {
+        Schema::create(config('passKit.devices_table', 'devices'), function (Blueprint $table) {
             $table->increments('id');
             $table->string('device_library_identifier');
-            $table->string(config('wallet.apn_token_field', 'token'));
+            $table->string(config('passKit.apn_token_field', 'token'));
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateDevicesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(config('wallet.devices_table', 'devices'));
+        Schema::dropIfExists(config('passKit.devices_table', 'devices'));
     }
 }

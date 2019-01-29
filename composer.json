@@ -1,6 +1,6 @@
 {
-    "name": "revosystems/laravel-ios-wallet",
-    "description": "iOS Wallet Pass manager",
+    "name": "revosystems/laravel-ios-pass-kit",
+    "description": "iOS PassKit manager",
     "type": "library",
     "authors": [
         {
@@ -14,7 +14,7 @@
     "autoload": {
         "files" : [],
         "psr-4": {
-            "RevoSystems\\iOSWallet\\": "src"
+            "RevoSystems\\iOSPassKit\\": "src"
         }
     },
     "minimum-stability": "stable"

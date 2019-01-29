@@ -1,12 +1,12 @@
 <?php
 
-namespace RevoSystems\iOSWallet\Controllers\Api;
+namespace RevoSystems\iOSPassKit\Controllers\Api;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Response;
-use RevoSystems\iOSWallet\Models\Pass;
+use RevoSystems\iOSPassKit\Models\Pass;
 
-class WalletController extends Controller
+class PassKitController extends Controller
 {
     public function __middleware()
     {

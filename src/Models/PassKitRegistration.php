@@ -1,18 +1,18 @@
 <?php
 
-namespace RevoSystems\iOSWallet\Models;
+namespace RevoSystems\iOSPassKit\Models;
 
 use App\Models\Modules\GiftCard;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Registration extends Model
+class PassKitRegistration extends Model
 {
     protected $guarded = [];
     use SoftDeletes;
 
     public function devices()
     {
-        return $this->hasMany(Device::class);
+        return $this->hasMany(PassKitDevice::class);
     }
 }

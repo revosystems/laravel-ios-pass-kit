@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRegistrationsTable extends Migration
+class CreatePassKitRegistrationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,13 @@ class CreateRegistrationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('registrations', function (Blueprint $table) {
+        Schema::create('pass_kit_registrations', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('device_id')->unsigned();
-            $table->integer('walletable_id')->unsigned();
+            $table->integer('pass_kit_device_id')->unsigned();
+            $table->integer('pass_kit_registration_id')->unsigned();
+            $table->string('pass_kit_registration_type');
             $table->timestamps();
             $table->softDeletes();
-
-            $table->foreign('device_id')->references('id')->on(config('wallet.devices_table', 'devices'))->onDelete('cascade');
         });
     }
 
@@ -31,6 +30,6 @@ class CreateRegistrationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('registrations');
+        Schema::dropIfExists('pass_kit_registrations');
     }
 }

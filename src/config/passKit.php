@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'routePrefix'           => 'api/external/wallet',
+    'routePrefix'           => 'api/external/passKit',
     'devices_table'         => 'apn_tokens',
     'apn_token_field'       => 'token',
     'serial_number_field'   => 'serial_number',
