@@ -17,5 +17,12 @@
             "RevoSystems\\iOSPassKit\\": "src"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "RevoSystems\\iOSPassKit\\iOSPassKitServiceProvider"
+            ]
+        }
+    },
     "minimum-stability": "stable"
 }

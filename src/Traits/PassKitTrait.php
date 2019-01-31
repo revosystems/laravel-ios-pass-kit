@@ -2,14 +2,12 @@
 
 namespace RevoSystems\iOSPassKit\Traits;
 
+use Illuminate\Notifications\Notifiable;
 use RevoSystems\iOSPassKit\Models\PassKitDevice;
 
 trait PassKitTrait
 {
-    /*
-     * Returns a token that will be used to authorize wallet requests
-     */
-    abstract protected function getPassKitToken();
+    use Notifiable;
 
     /**
      * Finds the walletable instance by its serial number
@@ -19,21 +17,31 @@ trait PassKitTrait
     /*
      * Returns pass/giftCard/voucher identifier
      */
-    abstract protected function getSerialNumber();
-
-    /*
-     * Returns pass type bundle generated on iTunes connect. Starts with pass.whatever.bundle.you.have
-     */
+    abstract public function getSerialNumber();
 
     public function devices()
     {
         return $this->morphToMany(PassKitDevice::class, 'pass_kit_registration');
-//        return $this->morphToMany(Device::class, 'walletable'); // FIXME: Walletable not correct
     }
 
-    protected function getPassType()
+    public static function boot()
     {
-        return array_flip(config('passKit.passTypes')[get_class($this)]);
+        parent::boot();
+        static::updating(function ($pass) {
+            $usernameField = config('passKit.username_field', 'username');
+            $pass->notify(new PassKitUpdatedNotification(auth()->user()->$usernameField, static::class, $pass->getSerialNumber()));
+        });
+    }
+
+    public static function getPassKitToken()
+    {
+        return config('passKit.passKitToken', '<replace-by-pass-kit-token>');
+    }
+
+    public function routeNotificationForApn()
+    {
+        return $this->devices()->first()->uuid;
+        return $this->devices()->pluck('uuid');
     }
 
     public static function findRegistration($serialNumber, $passType)
@@ -54,5 +62,15 @@ trait PassKitTrait
         static::findRegistration($serialNumber, $passType)->devices()->detach(
             PassKitDevice::where('device_library_identifier', $deviceLibraryIdentifier)->firstOrFail()
         );
+    }
+
+    public static function getPassTypeRelation($passType)
+    {
+        return lcfirst(str_plural(class_basename(config('passKit.passTypes')[$passType])));
+    }
+
+    public static function getPassTypeTable($passType)
+    {
+        return snake_case(static::getPassTypeRelation($passType));
     }
 }
