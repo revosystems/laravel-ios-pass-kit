@@ -4,6 +4,7 @@ namespace RevoSystems\iOSPassKit\Traits;
 
 use Illuminate\Notifications\Notifiable;
 use RevoSystems\iOSPassKit\Models\PassKitDevice;
+use RevoSystems\iOSPassKit\Notifications\PassKitUpdatedNotification;
 
 trait PassKitTrait
 {
@@ -40,7 +41,7 @@ trait PassKitTrait
 
     public function routeNotificationForApn()
     {
-        return $this->devices()->first()->uuid;
+        return $this->devices()->first()->uuid; // TODO: UPDATE laravel-apn-notification package
         return $this->devices()->pluck('uuid');
     }
 
