@@ -4,8 +4,9 @@ namespace RevoSystems\iOSPassKit\Notifications;
 
 use Illuminate\Support\Facades\Config;
 use NotificationChannels\Apn\ApnServiceProvider;
+use RevoSystems\iOSPassKit\Traits\PassKitTrait;
 
-class PassKitNotificationToken extends GSModel
+class PassKitNotificationToken
 {
     public static function setup($passType)
     {
@@ -19,6 +20,6 @@ class PassKitNotificationToken extends GSModel
 
     public static function getApnCertificatePath($passType)
     {
-        return config('passKit.certificatesDirectory') . '/' . PassKitTrait::getPassTypeTable($passType) . '-apns-passes-cert.pem';
+        return config('passKit.certificatesDirectory') . '/' . lcfirst(str_plural(class_basename($passType))) . '-apns-passes-cert.pem';
     }
 }

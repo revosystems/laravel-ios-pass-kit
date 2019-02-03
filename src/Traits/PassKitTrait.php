@@ -41,7 +41,7 @@ trait PassKitTrait
 
     public function routeNotificationForApn()
     {
-        return $this->devices()->first()->uuid; // TODO: UPDATE laravel-apn-notification package
+        return $this->devices()->pluck('uuid')->toArray();
     }
 
     public static function findRegistration($serialNumber, $passType)
