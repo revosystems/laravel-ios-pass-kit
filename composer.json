@@ -11,10 +11,19 @@
     "require": {
         "laravel/framework": ">=5.5"
     },
+    "require-dev": {
+        "phpunit/phpunit": "~5.7"
+    },
     "autoload": {
         "files" : [],
         "psr-4": {
-            "RevoSystems\\iOSPassKit\\": "src"
+            "RevoSystems\\iOSPassKit\\": "src",
+            "RevoSystems\\Demo\\": "app"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
         }
     },
     "extra": {

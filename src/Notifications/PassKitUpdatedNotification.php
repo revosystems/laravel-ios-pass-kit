@@ -2,7 +2,6 @@
 
 namespace RevoSystems\iOSPassKit\Notifications;
 
-use App\Models\Master\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
@@ -33,17 +32,16 @@ class PassKitUpdatedNotification extends Notification implements ShouldQueue
     public function __wakeup()
     {
         $this->setupUser();
+        PassKitNotificationToken::setup($this->passType);
         parent::__wakeup();
     }
 
     private function setupUser()
     {
-        auth()->loginUsingId(9639);
-        createDBConnection('revo', true);
-        return;
-        $this->tenant = $this->getPropertyValue(new \ReflectionProperty(static::class, 'tenant'));
-        auth()->login(User::where('tenant', $this->tenant)->firstOrFail());
-        createDBConnection('tenant', true);
+        $usernameField  = config('passKit.username_field');
+        $userClass      = config('passKit.userClass');
+        auth()->login($userClass::where($usernameField, $this->tenant)->firstOrFail());
+        createDBConnection($usernameField, true);
     }
 
     /**
@@ -59,11 +57,6 @@ class PassKitUpdatedNotification extends Notification implements ShouldQueue
 
     public function toApn($notifiable)
     {
-        return ApnMessage::create()
-//        return ApnMessage::create(null, null, [])
-//            ->badge(1)
-//            ->title('Hola')
-//            ->body('Que tal');
-        ;
+        return ApnMessage::create();
     }
 }

@@ -18,7 +18,7 @@ class PassKitController extends Controller
     {
         // TODO: IGNORE IT
         collect(request('logs'))->each(function ($logLine) {
-            \Log::info($logLine);
+            \Log::info("LOG: {$logLine}");
         });
     }
 
@@ -45,12 +45,12 @@ class PassKitController extends Controller
                 return $pass->getSerialNumber();
             });
         })->flatten();
-        if (! $serialNumbers) {
+        if (! $serialNumbers || $serialNumbers == []) {
             return response()->json()->setStatusCode(Response::HTTP_NO_CONTENT);
         }
         return response()->json([
-            'lastUpdated'   => Carbon::now()->toDateTimeString(),
-            'serialNumber'  => $serialNumbers
+            'lastUpdated'   => (Carbon::parse(request('passesUpdatedSince')) ? : Carbon::now())->toDateTimeString(),
+            'serialNumbers'  => $serialNumbers
         ]);
     }
 }
