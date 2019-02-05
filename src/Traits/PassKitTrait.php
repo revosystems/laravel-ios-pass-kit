@@ -5,6 +5,7 @@ namespace RevoSystems\iOSPassKit\Traits;
 use Illuminate\Notifications\Notifiable;
 use RevoSystems\iOSPassKit\Models\PassKitDevice;
 use RevoSystems\iOSPassKit\Notifications\PassKitUpdatedNotification;
+use RevoSystems\iOSPassKit\Services\PassKitGenerator;
 
 trait PassKitTrait
 {
@@ -30,6 +31,7 @@ trait PassKitTrait
         parent::boot();
         static::updating(function ($pass) {
             $usernameField = config('passKit.username_field', 'username');
+            PassKitGenerator::generate(auth()->user()->$usernameField, $pass);
             $pass->notify(new PassKitUpdatedNotification(auth()->user()->$usernameField, static::class, $pass->getSerialNumber()));
         });
     }
