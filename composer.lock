@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "512e985aef0bd4b24adad8450fcb0618",
+    "content-hash": "3f242d1f22c69cee67df8898c8644036",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -1319,6 +1319,54 @@
                 "promise"
             ],
             "time": "2016-01-26T13:27:02+00:00"
+        },
+        {
+            "name": "pkpass/pkpass",
+            "version": "v1.2.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tschoffelen/php-pkpass.git",
+                "reference": "b5a406a67ef125c1442e21cbea6c1974668ac405"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tschoffelen/php-pkpass/zipball/b5a406a67ef125c1442e21cbea6c1974668ac405",
+                "reference": "b5a406a67ef125c1442e21cbea6c1974668ac405",
+                "shasum": ""
+            },
+            "require": {
+                "ext-zip": "*",
+                "php": ">=5.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PKPass\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Thomas Schoffelen",
+                    "email": "thomas@scholica.com",
+                    "homepage": "http://thomasschoffelen.com/"
+                }
+            ],
+            "description": "PHP PKPass class for iOS Wallet",
+            "homepage": "https://github.com/tschoffelen/PHP-PKPass",
+            "keywords": [
+                "apple",
+                "ios",
+                "ipad",
+                "iphone",
+                "passbook",
+                "php",
+                "wallet"
+            ],
+            "time": "2018-07-24T07:06:33+00:00"
         },
         {
             "name": "psr/container",

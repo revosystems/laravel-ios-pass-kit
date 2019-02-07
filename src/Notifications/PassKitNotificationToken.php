@@ -22,4 +22,9 @@ class PassKitNotificationToken
     {
         return config('passKit.certificatesDirectory') . '/' . lcfirst(str_plural(class_basename($passType))) . '-apns-passes-cert.pem';
     }
+
+    public static function getApnP12CertificatePath($passTableName)
+    {
+        return config('passKit.certificatesDirectory') . "/{$passTableName}" . '-crypt-passes-cert.p12';
+    }
 }

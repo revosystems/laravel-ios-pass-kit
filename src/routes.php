@@ -1,5 +1,6 @@
 <?php
 
+Route::resource('passKit', 'RevoSystems\iOSPassKit\Http\Controllers\PassKitController');
 Route::group(['prefix' => config('passKit.routePrefix', 'api/external/passKit') . "/{account}/v1", 'namespace' => 'RevoSystems\iOSPassKit\Http\Controllers\Api', "middleware" => "passKitConnection"], function () {
     Route::post('log', 'PassKitController@log')->name('passKit.log');
     Route::get('devices/{libraryIdentifier}/registrations/{passType}', 'PassKitController@index')->name('passKit.index');

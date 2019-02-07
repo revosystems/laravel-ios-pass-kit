@@ -32,7 +32,7 @@ trait PassKitTrait
         static::updating(function ($pass) {
             $usernameField = config('passKit.username_field', 'username');
             PassKitGenerator::generate(auth()->user()->$usernameField, $pass);
-            $pass->notify(new PassKitUpdatedNotification(auth()->user()->$usernameField, static::class, $pass->getSerialNumber()));
+//            $pass->notify(new PassKitUpdatedNotification(auth()->user()->$usernameField, static::class, $pass->getSerialNumber()));
         });
     }
 
