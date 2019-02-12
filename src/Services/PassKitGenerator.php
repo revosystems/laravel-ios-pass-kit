@@ -2,63 +2,92 @@
 
 namespace RevoSystems\iOSPassKit\Services;
 
-use App\Models\Config\Business;
 use PKPass\PKPass;
 use RevoSystems\iOSPassKit\Notifications\PassKitNotificationToken;
 
 class PassKitGenerator
 {
-    public static function generate($username, $pass)
+    protected $pass;
+    protected $passTypeName;
+    protected $passJson;
+    protected $passContents;
+
+    public function __construct($pass)
     {
-        $tableName  = $pass->getTable();
-        $passJson   = static::mergePass($pass, static::getBasePass($tableName), static::getBusinessPass($tableName));
-        $pass       = static::buildPKPass($username, $tableName, $passJson);
-        $passFile = $pass->create();
-        $pkPassFilePath = resource_path("apn/passes") . "/" . uniqid() . ".pkpass";
-        $file = fopen($pkPassFilePath, "w");
-        fwrite($file, $passFile);
-        fclose($file);
-        return $pkPassFilePath;
+        $this->pass         = $pass;
+        $this->passTypeName = $pass::relationName();
+        $this->passJson     = $this->mergePass($pass, $this->getBasePass(), $this->getBusinessPass());
     }
 
-    private static function mergePass($pass, $basePass, $passValues)
+    public static function make($pass)
     {
-        $basePass['serialNumber']                           = $pass->uuid;
-        $basePass['locations']                              = $passValues['locations'];
-        $basePass['barcode']['message']                     = $passValues['barcode']['message'];
-        $basePass['organizationName']                       = $passValues['organizationName'];
-        $basePass['description']                            = $passValues['description'];
-        $basePass['logoText']                               = $passValues['logoText'];
-        $basePass['backgroundColor']                        = $passValues['backgroundColor'];
-        $basePass['foregroundColor']                        = $passValues['foregroundColor'];
-        $basePass['labelColor']                             = $passValues['labelColor'];
-        $basePass['storeCard']['primaryFields'][0]['label'] = $passValues['storeCard']['primaryFields'][0]['label'];
-        $basePass['storeCard']['primaryFields'][0]['value'] = (float)$pass->balance;
-        $basePass['storeCard']['backFields']                = $passValues['storeCard']['backFields'];
+        return new PassKitGenerator($pass);
+    }
+
+    public function generate($username)
+    {
+        $this->buildPKPass($username);
+        return tap(config('passKit.passesDirectory') . "/passes/{$username}-" . uniqid() . '.pkpass', function ($pkPassFilePath) {
+            return $this->storePass($pkPassFilePath);
+        });
+    }
+
+    public function update($username)
+    {
+        $this->buildPKPass($username);
+        return tap(config('passKit.tenantsDirectory') . "/{$username}/passes/{$this->pass->getSerialNumber()}.pkpass", function ($pkPassFilePath) {
+            return $this->storePass($pkPassFilePath);
+        });
+    }
+
+    public function buildPKPass($username)
+    {
+        $pass     = new PKPass(PassKitNotificationToken::getApnP12CertificatePath($this->pass), config('passKit.certificatesPassword'));
+        $pass->setData($this->passJson);
+        $pass->addFile(config('passKit.tenantsDirectory') . "/{$username}/passes/{$this->passTypeName}.pass/icon.png");
+        $pass->addFile(config('passKit.tenantsDirectory') . "/{$username}/passes/{$this->passTypeName}.pass/icon@2x.png");
+        $pass->addFile(config('passKit.tenantsDirectory') . "/{$username}/passes/{$this->passTypeName}.pass/logo.png");
+        $pass->addFile(config('passKit.tenantsDirectory') . "/{$username}/passes/{$this->passTypeName}.pass/strip.png");
+        $pass->addFile(config('passKit.tenantsDirectory') . "/{$username}/passes/{$this->passTypeName}.pass/strip@2x.png");
+        $this->passContents = $pass->create();
+    }
+
+    public function getBasePass()
+    {
+        return json_decode(file_get_contents(config('passKit.passesDirectory') . "/{$this->passTypeName}.json"), true);
+    }
+
+    private function getBusinessPass()
+    {
+        return json_decode(config('passKit.businessClass')::first()->passes, true)[$this->passTypeName];
+    }
+
+    public function mergePass($pass, $basePass, $passWithValues)
+    {
+        $usernameField                                      = config('passKit.username_field');
+        $balanceField                                       = $this->pass->getBalanceField();
+        $basePass['serialNumber']                           = $pass->getSerialNumber();
+//        $basePass['webServiceURL']                          = "https://9be25a1a.ngrok.io/" . config('passKit.routePrefix') . '/' . auth()->user()->$usernameField;
+        $basePass['webServiceURL']                          = url(config('passKit.routePrefix')) . '/' . auth()->user()->$usernameField;
+        $basePass['authenticationToken']                    = config('passKit.apiToken');
+        $basePass['locations']                              = $passWithValues['locations'];
+        $basePass['barcode']['message']                     = $passWithValues['barcode']['message'];
+        $basePass['organizationName']                       = $passWithValues['organizationName'];
+        $basePass['description']                            = $passWithValues['description'];
+        $basePass['logoText']                               = $passWithValues['logoText'];
+        $basePass['backgroundColor']                        = $passWithValues['backgroundColor'];
+        $basePass['foregroundColor']                        = $passWithValues['foregroundColor'];
+        $basePass['labelColor']                             = $passWithValues['labelColor'];
+        $basePass['storeCard']['primaryFields'][0]['label'] = $passWithValues['storeCard']['primaryFields'][0]['label'];
+        $basePass['storeCard']['primaryFields'][0]['value'] = (float)$pass->$balanceField;
+        $basePass['storeCard']['backFields']                = $passWithValues['storeCard']['backFields'];
         return $basePass;
     }
 
-    private static function getBasePass($tableName)
+    public function storePass($pkPassFilePath)
     {
-        return json_decode(file_get_contents(public_path() . "/{$tableName}_pass.json"), true);
-    }
-
-    private static function getBusinessPass($tableName)
-    {
-        return json_decode(Business::first()->passes, true)[$tableName];
-    }
-
-    private static function buildPKPass($username, $tableName, $basePass)
-    {
-        $password = ''; // TODO: get from config
-        $password = '938358295'; // TODO: get from config
-        $pass     = new PKPass(PassKitNotificationToken::getApnP12CertificatePath($tableName), $password);
-        $pass->setData($basePass);
-        $pass->addFile(public_path('tenants') . "/${username}/passes/{$tableName}.pass/icon.png");
-        $pass->addFile(public_path('tenants') . "/${username}/passes/{$tableName}.pass/icon@2x.png");
-        $pass->addFile(public_path('tenants') . "/${username}/passes/{$tableName}.pass/logo.png");
-        $pass->addFile(public_path('tenants') . "/${username}/passes/{$tableName}.pass/strip.png");
-        $pass->addFile(public_path('tenants') . "/${username}/passes/{$tableName}.pass/strip@2x.png");
-        return $pass;
+        $file = fopen($pkPassFilePath, 'w');
+        fwrite($file, $this->passContents);
+        fclose($file);
     }
 }

@@ -18,7 +18,7 @@ class PassKitApiToken
 
     private function verifyToken($authToken)
     {
-        return $authToken == 'ApplePass ' . PassKitTrait::getPassKitToken();
+        return $authToken == 'ApplePass ' . PassKitTrait::getPassKitApiToken();
     }
 
     private function verifyPassExists($serialNumber, $passType)

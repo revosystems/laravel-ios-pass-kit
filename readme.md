@@ -63,8 +63,8 @@ Add middleware to kernel
 ```
 protected $routeMiddleware = [
     ...
-    'passKitToken'        => \RevoSystems\iOSPassKit\Http\Middleware\PassKitApiToken::class,
-    'passKitConnection'   => \RevoSystems\iOSPassKit\Http\Middleware\PassKitApiConnection::class,
+    'passKitApiToken'       => \RevoSystems\iOSPassKit\Http\Middleware\PassKitApiToken::class,
+    'passKitApiConnection'  => \RevoSystems\iOSPassKit\Http\Middleware\PassKitApiConnection::class,
 ]
 ```
 ### Notifications

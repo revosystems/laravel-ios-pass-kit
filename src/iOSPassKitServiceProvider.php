@@ -9,6 +9,8 @@ class iOSPassKitServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->loadRoutesFrom(__DIR__.'/routes.php');
+        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
 
         $this->publishes([
             __DIR__.'/../config/passKit.php' => config_path('passKit.php')
@@ -17,6 +19,7 @@ class iOSPassKitServiceProvider extends ServiceProvider
 
     public function register()
     {
+        $this->mergeConfigFrom(__DIR__.'/../config/passKit.php', 'passKit');
         app()->singleton(ResourceManager::class, function () {
             return new ResourceManager();
         });

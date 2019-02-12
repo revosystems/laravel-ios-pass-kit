@@ -13,7 +13,7 @@
         "pkpass/pkpass": "^1.2"
     },
     "require-dev": {
-        "phpunit/phpunit": "~5.7"
+        "orchestra/testbench": "~3.0"
     },
     "autoload": {
         "files" : [],
@@ -24,7 +24,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "RevoSystems\\iOSPassKit\\Tests\\": "tests/"
         }
     },
     "extra": {

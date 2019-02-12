@@ -21,6 +21,11 @@ trait PassKitTrait
      */
     abstract public function getSerialNumber();
 
+    /*
+     * Returns pass/giftCard/voucher balance field
+     */
+    abstract public function getBalanceField();
+
     public function devices()
     {
         return $this->morphToMany(PassKitDevice::class, 'pass_kit_registration');
@@ -29,16 +34,24 @@ trait PassKitTrait
     public static function boot()
     {
         parent::boot();
+        static::created(function ($pass) {
+            $usernameField = config('passKit.username_field', 'username');
+            $path = PassKitGenerator::make($pass)->generate(auth()->user()->$usernameField);
+            // SEND MAIL
+        });
         static::updating(function ($pass) {
             $usernameField = config('passKit.username_field', 'username');
-            PassKitGenerator::generate(auth()->user()->$usernameField, $pass);
-//            $pass->notify(new PassKitUpdatedNotification(auth()->user()->$usernameField, static::class, $pass->getSerialNumber()));
+            $balanceField = $pass->getBalanceField();
+            if ($pass->$balanceField != $pass->getOriginal()[$balanceField]) {
+                $path = PassKitGenerator::make($pass)->update(auth()->user()->$usernameField);
+                $pass->notify(new PassKitUpdatedNotification(auth()->user()->$usernameField, static::class, $pass->getSerialNumber()));
+            }
         });
     }
 
-    public static function getPassKitToken()
+    public static function getPassKitApiToken()
     {
-        return config('passKit.passKitToken', '<replace-by-pass-kit-token>');
+        return config('passKit.apiToken');
     }
 
     public function routeNotificationForApn()
@@ -48,7 +61,7 @@ trait PassKitTrait
 
     public static function findRegistration($serialNumber, $passType)
     {
-        return (config('passKit.passTypes')[$passType])::where('uuid', $serialNumber)->firstOrFail();
+        return (self::getPassKitClass($passType))::where('uuid', $serialNumber)->firstOrFail();
     }
 
     public static function registerApn($deviceLibraryIdentifier, $passType, $serialNumber, $apnToken)
@@ -66,13 +79,18 @@ trait PassKitTrait
         );
     }
 
-    public static function getPassTypeRelation($passType)
+    public static function relationName()
     {
-        return lcfirst(str_plural(class_basename(config('passKit.passTypes')[$passType])));
+        return lcfirst(str_plural(class_basename(static::class)));
+    }
+
+    public static function getPassKitClass($passType)
+    {
+        return config("passKit.passTypes")[$passType];
     }
 
     public static function getPassTypeTable($passType)
     {
-        return snake_case(static::getPassTypeRelation($passType));
+        return self::getPassKitClass($passType)::getTableName();
     }
 }

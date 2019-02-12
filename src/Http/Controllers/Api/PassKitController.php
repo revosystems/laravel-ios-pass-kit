@@ -11,7 +11,7 @@ class PassKitController extends Controller
 {
     public function register($account, $deviceLibraryIdentifier, $passType, $serialNumber)
     {
-        (config('passKit.passTypes')[$passType])::registerApn($deviceLibraryIdentifier, $passType, $serialNumber, request('pushToken'));
+        PassKitTrait::getPassKitClass($passType)::registerApn($deviceLibraryIdentifier, $passType, $serialNumber, request('pushToken'));
     }
 
     public function log($account)
@@ -24,7 +24,7 @@ class PassKitController extends Controller
 
     public function unRegister($account, $deviceLibraryIdentifier, $passType, $serialNumber)
     {
-        (config('passKit.passTypes')[$passType])::unRegisterApn($deviceLibraryIdentifier, $passType, $serialNumber); /*, only have one passType request('passType')*/
+        PassKitTrait::getPassKitClass($passType)::unRegisterApn($deviceLibraryIdentifier, $passType, $serialNumber); /*, only have one passType request('passType')*/
     }
 
     public function show($account, $passType, $serialNumber)
@@ -33,12 +33,14 @@ class PassKitController extends Controller
             return response()->json()->setStatusCode(Response::HTTP_NOT_MODIFIED);
         }
         $usernameField = config('passKit.username_field');
-        return response()->file(config('passKit.passesDirectory') . auth()->user()->$usernameField . "/passes/RevoCard-{$serialNumber}.pkpass");
+        return response()->file(config('passKit.tenantsDirectory') . '/' . auth()->user()->$usernameField . "/passes/{$serialNumber}.pkpass");
     }
 
     public function index($account, $deviceLibraryIdentifier, $passType)
     {
-        $relation      = PassKitTrait::getPassTypeRelation($passType);
+        $class= PassKitTrait::getPassKitClass($passType);
+        $relation      = $class::relationName();
+        $relation      = PassKitTrait::getPassKitClass($passType)::relationName();
         $table         = PassKitTrait::getPassTypeTable($passType);
         $serialNumbers = config('passKit.deviceClass')::where('device_library_identifier', $deviceLibraryIdentifier)->get()->map(function ($device) use ($relation, $table) {
             return $device->$relation()->where("{$table}.updated_at", '>', Carbon::parse(request('passesUpdatedSince')))->get()->map(function ($pass) {

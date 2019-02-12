@@ -8,23 +8,23 @@ use RevoSystems\iOSPassKit\Traits\PassKitTrait;
 
 class PassKitNotificationToken
 {
-    public static function setup($passType)
+    public static function setup($passClass)
     {
         Config::set('broadcasting.connections.apn', [
             'environment' => 1,
-            'certificate' => self::getApnCertificatePath($passType),
+            'certificate' => static::getApnCertificatePath($passClass),
             'pass_phrase' => null, // Optional passPhrase
         ]);
         (new ApnServiceProvider(app()))->boot();
     }
 
-    public static function getApnCertificatePath($passType)
+    public static function getApnCertificatePath($passClass)
     {
-        return config('passKit.certificatesDirectory') . '/' . lcfirst(str_plural(class_basename($passType))) . '-apns-passes-cert.pem';
+        return config('passKit.certificatesDirectory') . "/{$passClass::relationName()}-apns-passes-cert.pem";
     }
 
-    public static function getApnP12CertificatePath($passTableName)
+    public static function getApnP12CertificatePath($passClass)
     {
-        return config('passKit.certificatesDirectory') . "/{$passTableName}" . '-crypt-passes-cert.p12';
+        return config('passKit.certificatesDirectory') . "/{$passClass::relationName()}-crypt-passes-cert.p12";
     }
 }

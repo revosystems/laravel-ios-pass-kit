@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
-class CreateDevicesTable extends Migration
+class VouchersTables extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,14 @@ class CreateDevicesTable extends Migration
      */
     public function up()
     {
-        Schema::create(config('passKit.devices_table', 'devices'), function (Blueprint $table) {
+        Schema::create('vouchers', function (Blueprint $table) {
+            // auto increment id (primary key)
             $table->increments('id');
-            $table->string('device_library_identifier');
-            $table->string(config('passKit.apn_token_field', 'token'));
+            $table->string('uuid');
+            $table->decimal('balance', 8, 2);
+
             $table->timestamps();
+            $table->softDeletes();  //It is not really deleted, just marked as deleted
         });
     }
 
@@ -28,6 +31,6 @@ class CreateDevicesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists(config('passKit.devices_table', 'devices'));
+        Schema::drop('vouchers');
     }
 }
