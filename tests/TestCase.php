@@ -2,11 +2,25 @@
 
 namespace RevoSystems\iOSPassKit\Tests;
 
+use Dotenv\Dotenv;
 use ReflectionClass;
 use RevoSystems\iOSPassKit\iOSPassKitServiceProvider;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->loadLaravelMigrations();
+        $this->loadEnv();
+        $this->withFactories(__DIR__.'/../database/factories');
+    }
+
+    protected function loadEnv()
+    {
+        return (new Dotenv(__DIR__, "../.env"))->load();
+    }
+
     protected function getPackageProviders($app)
     {
         return [iOSPassKitServiceProvider::class];

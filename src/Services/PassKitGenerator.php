@@ -52,17 +52,17 @@ class PassKitGenerator
         $this->passContents = $pass->create();
     }
 
-    public function getBasePass()
+    protected function getBasePass()
     {
         return json_decode(file_get_contents(config('passKit.passesDirectory') . "/{$this->passTypeName}.json"), true);
     }
 
-    private function getBusinessPass()
+    protected function getBusinessPass()
     {
         return json_decode(config('passKit.businessClass')::first()->passes, true)[$this->passTypeName];
     }
 
-    public function mergePass($pass, $basePass, $passWithValues)
+    protected function mergePass($pass, $basePass, $passWithValues)
     {
         $usernameField                                      = config('passKit.username_field');
         $balanceField                                       = $this->pass->getBalanceField();
