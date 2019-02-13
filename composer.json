@@ -12,19 +12,10 @@
         "laravel/framework": ">=5.5",
         "pkpass/pkpass": "^1.2"
     },
-    "require-dev": {
-        "orchestra/testbench": "~3.0"
-    },
     "autoload": {
         "files" : [],
         "psr-4": {
-            "RevoSystems\\iOSPassKit\\": "src",
-            "RevoSystems\\Demo\\": "app"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "RevoSystems\\iOSPassKit\\Tests\\": "tests/"
+            "RevoSystems\\iOSPassKit\\": "src"
         }
     },
     "extra": {
